@@ -28,10 +28,19 @@ const significantNum = (num, precision = 4, toFix = 3, noNumRet) => {
 
 const domOnResize = (el, cb) => {
     const callback = cb ?? (() => { })
+    let width = null, height = null
+    const sendConf = (nWidth, nHeight) => {
+        if (typeof nWidth === "number" && typeof nHeight === "number") {
+            if (width !== nWidth || height !== nHeight) {
+                width = nWidth
+                height = nHeight
+                callback({ width, height })
+            }
+        }
+    }
     if (!!el) {
         // wrapper
         const wrapperEl = document.createElement('div')
-        console.log(wrapperEl.style)
         Object.assign(wrapperEl.style, {
             height: '100%'
             , opacity: '0'
@@ -53,8 +62,6 @@ const domOnResize = (el, cb) => {
             , height: '300%'
         })
         scrollWrapperEl1.appendChild(child1)
-        scrollWrapperEl1.scrollTop = 1000
-        scrollWrapperEl1.scrollLeft = 1000
 
         // scrollWrapper2 larger
         const scrollWrapperEl2 = document.createElement('div')
@@ -65,22 +72,31 @@ const domOnResize = (el, cb) => {
             , height: '300px'
         })
         scrollWrapperEl2.appendChild(child2)
-        scrollWrapperEl2.scrollTop = 1000
-        scrollWrapperEl2.scrollLeft = 1000
 
         scrollWrapperEl1.addEventListener('scroll', () => {
             scrollWrapperEl2.scrollTop = 1000
             scrollWrapperEl2.scrollLeft = 1000
+            const width = wrapperEl.offsetWidth
+            const height = wrapperEl.offsetHeight
+            sendConf(width, height)
         })
         scrollWrapperEl2.addEventListener('scroll', () => {
             scrollWrapperEl1.scrollTop = 1000
             scrollWrapperEl1.scrollLeft = 1000
+            const width = wrapperEl.offsetWidth
+            const height = wrapperEl.offsetHeight
+            sendConf(width, height)
         })
 
         wrapperEl.appendChild(scrollWrapperEl1)
         wrapperEl.appendChild(scrollWrapperEl2)
 
         el.appendChild(wrapperEl)
+
+        scrollWrapperEl1.scrollTop = 1000
+        scrollWrapperEl1.scrollLeft = 1000
+        scrollWrapperEl2.scrollTop = 1000
+        scrollWrapperEl2.scrollLeft = 1000
     }
 }
 
