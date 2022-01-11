@@ -26,8 +26,9 @@ const significantNum = (num, precision = 4, toFix = 3, noNumRet) => {
     };
 };
 
-const domOnResize = (el, cb) => {
+const domOnResize = (el, cb, conf) => {
     const callback = cb ?? (() => { })
+    const initialCall = conf?.initialCall ?? false
     let width = null, height = null
     const sendConf = (nWidth, nHeight) => {
         if (typeof nWidth === "number" && typeof nHeight === "number") {
@@ -73,25 +74,33 @@ const domOnResize = (el, cb) => {
         })
         scrollWrapperEl2.appendChild(child2)
 
-        scrollWrapperEl1.addEventListener('scroll', () => {
-            scrollWrapperEl2.scrollTop = 1000
-            scrollWrapperEl2.scrollLeft = 1000
-            const width = wrapperEl.offsetWidth
-            const height = wrapperEl.offsetHeight
-            sendConf(width, height)
-        })
-        scrollWrapperEl2.addEventListener('scroll', () => {
-            scrollWrapperEl1.scrollTop = 1000
-            scrollWrapperEl1.scrollLeft = 1000
-            const width = wrapperEl.offsetWidth
-            const height = wrapperEl.offsetHeight
-            sendConf(width, height)
-        })
-
         wrapperEl.appendChild(scrollWrapperEl1)
         wrapperEl.appendChild(scrollWrapperEl2)
 
         el.appendChild(wrapperEl)
+
+        const addListener = () => {
+            scrollWrapperEl1.addEventListener('scroll', () => {
+                scrollWrapperEl2.scrollTop = 1000
+                scrollWrapperEl2.scrollLeft = 1000
+                const width = wrapperEl.offsetWidth
+                const height = wrapperEl.offsetHeight
+                sendConf(width, height)
+            })
+            scrollWrapperEl2.addEventListener('scroll', () => {
+                scrollWrapperEl1.scrollTop = 1000
+                scrollWrapperEl1.scrollLeft = 1000
+                const width = wrapperEl.offsetWidth
+                const height = wrapperEl.offsetHeight
+                sendConf(width, height)
+            })
+        }
+
+        if (initialCall) {
+            addListener()
+        } else {
+            setTimeout(addListener, 0)
+        }
 
         scrollWrapperEl1.scrollTop = 1000
         scrollWrapperEl1.scrollLeft = 1000
