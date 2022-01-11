@@ -32,5 +32,3 @@ const funcs = {
 };
 
 export default funcs;
-
-export let fs = funcs;
